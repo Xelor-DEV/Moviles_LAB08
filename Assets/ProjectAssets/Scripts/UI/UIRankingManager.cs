@@ -19,4 +19,9 @@ public class UIRankingManager : MonoBehaviour
             }
         }
     }
+
+    public void LoadScene(string name)
+    {
+        GlobalSceneManager.Instance.LoadNormal(name);
+    }
 }

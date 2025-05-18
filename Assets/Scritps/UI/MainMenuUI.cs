@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+/*
 public class MainMenuUI : MonoBehaviour
 {
     [Header("UI Elements")]
@@ -108,4 +109,5 @@ public class MainMenuUI : MonoBehaviour
         GameManager.Instance.ShowScores();
     }
 }
+*/
 

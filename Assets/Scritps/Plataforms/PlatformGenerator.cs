@@ -65,7 +65,7 @@ public class PlatformGenerator : MonoBehaviour
         lastPlatformPosition = newPosition;
 
         platform.tag = "Plataform";
-  
+
         platform.layer = LayerMask.NameToLayer("Plataform");
 
         if (Random.value < movingPlatformChance)

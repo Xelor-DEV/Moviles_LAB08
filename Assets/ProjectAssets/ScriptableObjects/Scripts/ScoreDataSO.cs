@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 
 [CreateAssetMenu(fileName = "ScoreDataSO", menuName = "Scriptable Objects/ScoreDataSO")]
 public class ScoreDataSO : ScriptableObject
@@ -7,6 +6,7 @@ public class ScoreDataSO : ScriptableObject
     public string userId;
     public string username;
     public int currentScore;
+    public int highScore;
 
     public ScoreData ToScoreData()
     {
@@ -17,9 +17,17 @@ public class ScoreDataSO : ScriptableObject
             score = this.currentScore
         };
     }
+
+    public void ResetData()
+    {
+        userId = string.Empty;
+        username = string.Empty;
+        currentScore = 0;
+        highScore = 0;
+    }
 }
 
-[Serializable]
+[System.Serializable]
 public class ScoreData
 {
     public string userId;

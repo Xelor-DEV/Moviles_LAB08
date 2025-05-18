@@ -8,21 +8,14 @@ public class RankingManager : MonoBehaviour
 {
     [Header("Config")]
     [SerializeField] private int defaultEntries = 5;
+    [SerializeField] private UIRankingManager uiRankingManager;
 
-    [Header("Events")]
-    public UnityEvent<List<ScoreData>> OnRankingUpdated = new UnityEvent<List<ScoreData>>();
-
-    private DatabaseReference scoresReference;
+    private DatabaseReference _scoresReference;
 
     void Start()
     {
-        InitializeFirebase();
+        _scoresReference = FirebaseDatabase.DefaultInstance.GetReference("scores");
         LoadTopScores(defaultEntries);
-    }
-
-    private void InitializeFirebase()
-    {
-        scoresReference = FirebaseDatabase.DefaultInstance.GetReference("scores");
     }
 
     public void LoadTopScores(int numberOfEntries)
@@ -32,18 +25,18 @@ public class RankingManager : MonoBehaviour
 
     private IEnumerator LoadTopScoresCoroutine(int maxEntries)
     {
-        var query = scoresReference.OrderByChild("score").LimitToLast(maxEntries);
+        var query = _scoresReference
+            .OrderByChild("score")
+            .LimitToLast(maxEntries);
+
         var task = query.GetValueAsync();
 
         yield return new WaitUntil(() => task.IsCompleted);
 
-        if (task == null || task.IsFaulted)
-        {
-            Debug.LogError("Error al cargar scores");
-            yield break;
-        }
-
-        ProcessSnapshot(task.Result);
+        if (task != null && task.IsCompleted && !task.IsFaulted)
+            ProcessSnapshot(task.Result);
+        else
+            Debug.LogError("Error loading scores");
     }
 
     private void ProcessSnapshot(DataSnapshot snapshot)
@@ -52,11 +45,19 @@ public class RankingManager : MonoBehaviour
 
         foreach (DataSnapshot child in snapshot.Children)
         {
-            ScoreData entry = JsonUtility.FromJson<ScoreData>(child.GetRawJsonValue());
-            scores.Add(entry);
+            try
+            {
+                ScoreData entry = JsonUtility.FromJson<ScoreData>(child.GetRawJsonValue());
+                scores.Add(entry);
+            }
+            catch (System.ArgumentException e)
+            {
+                Debug.LogError($"Error parsing JSON: {child.Key} - {e.Message}");
+            }
         }
 
         scores.Sort((a, b) => b.score.CompareTo(a.score));
-        OnRankingUpdated?.Invoke(scores);
+
+        uiRankingManager.UpdateRankingUI(scores);
     }
 }

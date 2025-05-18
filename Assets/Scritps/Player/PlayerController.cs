@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     //int PointPlataform = 0;
     [Header("Score Settings")]
     [SerializeField] private float scoreMultiplier = 1f;
+    [SerializeField] private ScoreManager scoreManager;
 
     private Rigidbody rb;
     private BoxCollider coll;
@@ -97,7 +98,7 @@ public class PlayerController : MonoBehaviour
     {
         if (transform.position.y < startPosition.y - 5f)
         {
-            GameManager.Instance.GameOver();
+            GlobalSceneManager.Instance.LoadNormal("GameOver");
         }
     }
 
@@ -113,11 +114,11 @@ public class PlayerController : MonoBehaviour
             if (contact.normal.y > 0.1f)
             {
                 Destroy(collision.gameObject);
-              
 
-                GameManager.Instance.UpdateScore(1);
 
-               
+                scoreManager.AddScore(1);
+
+
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, 0);
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 

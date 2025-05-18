@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+/*
 public class ScoresUI : MonoBehaviour
 {
     [Header("UI References")]
@@ -50,3 +50,4 @@ public class ScoresUI : MonoBehaviour
         }
     }
 }
+*/

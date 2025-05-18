@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+/*
 public class GameManager : MonoBehaviour
 {
-   public static GameManager Instance { get; private set; }
 
     [Header("Player Info")]
     public string PlayerName { get; set; } = "Jugador";
@@ -12,19 +12,10 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     public float gameSpeed =1.0f;
 
-    private void Awake()
+    
+    private void Start()
     {
-        if(Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            LoadPlayerData();
-
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        LoadPlayerData();
     }
     public void StartGame()
     {
@@ -73,4 +64,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("HighScore", HighScore);
         PlayerPrefs.Save();
     }
+
+
 }
+*/

@@ -1,14 +1,20 @@
 using TMPro;
 using UnityEngine;
 
+
 public class GameUI : MonoBehaviour
 {
+    [Header("UI Elements")]
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text highScoreText;
 
-    private void Update()
+    public void UpdateCurrentScoreDisplay(int score)
     {
-        scoreText.text = $"Puntaje: {GameManager.Instance.CurredScore}";
-        highScoreText.text = $"Record: {GameManager.Instance.HighScore}";
+        scoreText.text = $"Score: {score}";
+    }
+
+    public void UpdateHighScoreDisplay(int highScore)
+    {
+        highScoreText.text = $"HighScore: {highScore}";
     }
 }

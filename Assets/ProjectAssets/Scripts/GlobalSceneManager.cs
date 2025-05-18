@@ -76,4 +76,9 @@ public class GlobalSceneManager : SingletonPersistent<GlobalSceneManager>
             SceneManager.UnloadSceneAsync(sceneName);
         }
     }
+
+    public void CloseGame()
+    {
+        Application.Quit();
+    }
 }

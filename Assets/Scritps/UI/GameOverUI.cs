@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+/*
 public class GameOverUI : MonoBehaviour
 {
     [Header("UI Elements")]
@@ -33,3 +33,4 @@ public class GameOverUI : MonoBehaviour
         GameManager.Instance.ReturnToMenu();
     }
 }
+*/
