@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce = 14f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float touchDeadZone = 50f;
-
+    //int PointPlataform = 0;
     [Header("Score Settings")]
     [SerializeField] private float scoreMultiplier = 1f;
 
@@ -19,11 +19,17 @@ public class PlayerController : MonoBehaviour
     private Vector2 touchStartPos;
     private bool isTouching = false;
     private bool canPassThrough = false;
-    [Header("Platform Collision")]
+   
+
+    [Header("Platform Settings")]
     [SerializeField] private float platformPassThroughTime = 0.5f;
+    [SerializeField] private LayerMask platformLayer;
     private bool isJumpingFromPlatform = false;
+    private Collider playerCollider;
+
     private void Awake()
     {
+        playerCollider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<BoxCollider>();
         startPosition = transform.position;
@@ -33,7 +39,6 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         HandleMobileInput();
-        UpdateScore();
         CheckFall();
     }
 
@@ -86,15 +91,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = false;
     }
 
-    private void UpdateScore()
-    {
-        if (transform.position.y > highestY)
-        {
-            highestY = transform.position.y;
-            int score = Mathf.FloorToInt((highestY - startPosition.y) * scoreMultiplier);
-            GameManager.Instance.UpdateScore(score);
-        }
-    }
+
 
     private void CheckFall()
     {
@@ -106,16 +103,18 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        
+
         if (collision.gameObject.CompareTag("Plataform") && !isJumpingFromPlatform)
         {
             ContactPoint contact = collision.contacts[0];
 
            
-            if (contact.normal.y > 0.7f)
+            if (contact.normal.y > 0.1f)
             {
                 Destroy(collision.gameObject);
-
               
+
                 GameManager.Instance.UpdateScore(1);
 
                
@@ -127,27 +126,26 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    private bool IsPlatform(GameObject obj)
+    {
+        return platformLayer == (platformLayer | (1 << obj.layer));
+    }
+
     private IEnumerator EnablePlatformPassThrough()
     {
         isJumpingFromPlatform = true;
 
-        
-        Collider playerCollider = GetComponent<Collider>();
-        foreach (var platform in GameObject.FindGameObjectsWithTag("Plataform"))
-        {
-            Physics.IgnoreCollision(playerCollider, platform.GetComponent<Collider>(), true);
-        }
+        // Ignorar colisiones con la capa de plataformas
+        Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Plataform"), true);
 
         yield return new WaitForSeconds(platformPassThroughTime);
 
-      
-        foreach (var platform in GameObject.FindGameObjectsWithTag("Plataform"))
-        {
-            Physics.IgnoreCollision(playerCollider, platform.GetComponent<Collider>(), false);
-        }
+        // Restaurar colisiones con la capa de plataformas
+        Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Plataform"), false);
 
         isJumpingFromPlatform = false;
     }
+
     private void OnCollisionExit(Collision collision)
     {
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
