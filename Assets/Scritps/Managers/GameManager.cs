@@ -43,13 +43,13 @@ public class GameManager : MonoBehaviour
     }
     public void UpdateScore(int score)
     {
-        CurredScore = score;
-         if(score > HighScore)
+        CurredScore += score;
+         if(CurredScore > HighScore)
          {
-            HighScore = score;
-         
+            HighScore = CurredScore;
+            SavePlayerData();
 
-         }
+        }
     }
     public bool IsNewRecord()
     {

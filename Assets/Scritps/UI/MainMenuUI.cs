@@ -10,39 +10,64 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Button scoresButton;
     [SerializeField] private Button exitButton;
+
     private void Start()
     {
-
+        ConfigureMobileInput();
 
         GameManager.Instance.PlayerName = PlayerPrefs.GetString("PlayerName", "Jugador");
         UpdatePlayerNameDisplay();
 
- 
         playButton.onClick.AddListener(OnPlayButtonClicked);
         scoresButton.onClick.AddListener(OnScoresButtonClicked);
-        changeNameButton.onClick.AddListener(ChangePlayerName);
-
-       
-        nameInputField.shouldHideMobileInput = false;
+        changeNameButton.onClick.AddListener(OnChangeNameClicked);
     }
 
-
-
-    private void SetButtonSize(Button button, int width, int height)
+    private void ConfigureMobileInput()
     {
-        if (button != null)
-        {
-            RectTransform rect = button.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(width, height);
+#if UNITY_ANDROID || UNITY_IOS
+        // Configuración específica para móviles
+        nameInputField.shouldHideMobileInput = false;
+        nameInputField.onSelect.AddListener(OnInputFieldSelected);
+        nameInputField.onDeselect.AddListener(OnInputFieldDeselected);
 
-       
-            TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>();
-            if (buttonText != null)
-            {
-                buttonText.fontSize = 28;
-                buttonText.margin = new Vector4(10, 10, 10, 10);
-            }
+        // Configurar tipo de teclado
+        nameInputField.inputType = TMP_InputField.InputType.Standard;
+        nameInputField.keyboardType = TouchScreenKeyboardType.Default;
+        nameInputField.characterLimit = 12;
+#endif
+    }
+
+    private void OnInputFieldSelected(string text)
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        // Forzar mostrar el teclado cuando se selecciona el campo
+        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, false, false, false, false, "Ingresa tu nombre");
+#endif
+    }
+
+    private void OnInputFieldDeselected(string text)
+    {
+#if UNITY_ANDROID || UNITY_IOS
+        // Ocultar el teclado cuando se deselecciona
+        if (TouchScreenKeyboard.visible)
+        {
+            TouchScreenKeyboard.hideInput = true;
         }
+#endif
+    }
+
+    public void OnChangeNameClicked()
+    {
+        nameInputField.text = GameManager.Instance.PlayerName;
+        nameInputField.gameObject.SetActive(true);
+
+#if UNITY_ANDROID || UNITY_IOS
+        // Enfocar y activar el teclado
+        nameInputField.Select();
+        nameInputField.ActivateInputField();
+        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, false, false, false, false, "Ingresa tu nombre");
+#endif
     }
 
     public void ChangePlayerName()
@@ -57,10 +82,13 @@ public class MainMenuUI : MonoBehaviour
 
             UpdatePlayerNameDisplay();
             nameInputField.text = "";
+            nameInputField.gameObject.SetActive(false);
 
-            // Ocultar teclado virtual en móvil
 #if UNITY_ANDROID || UNITY_IOS
-            TouchScreenKeyboard.hideInput = true;
+            if (TouchScreenKeyboard.visible)
+            {
+                TouchScreenKeyboard.hideInput = true;
+            }
 #endif
         }
     }

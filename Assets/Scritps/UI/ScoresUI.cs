@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -5,39 +6,47 @@ using UnityEngine.UI;
 
 public class ScoresUI : MonoBehaviour
 {
-    [Header("UI Elements")]
-    [SerializeField] private Transform scoresContainer;
+    [Header("UI References")]
+    [SerializeField] private RectTransform scoresContainer;
     [SerializeField] private GameObject scoreEntryPrefab;
     [SerializeField] private Button backButton;
+    [SerializeField] private TMP_Text loadingText;
 
     private void Start()
     {
-        backButton.onClick.AddListener(OnBackButtonClicked);
-        LoadScores();
+        // Configurar botón de regreso
+        backButton.onClick.AddListener(() => GameManager.Instance.ReturnToMenu());
+
+        // Cargar y mostrar puntuaciones
+        LoadLocalScores();
     }
 
-    private void LoadScores()
+    private void LoadLocalScores()
     {
-       
+        // Limpiar contenedor
         foreach (Transform child in scoresContainer)
         {
             Destroy(child.gameObject);
         }
 
-        
-        FirebaseManager.Instance.GetTopScores(5, (scores) => {
-            for (int i = 0; i < scores.Count; i++)
-            {
-                var entry = Instantiate(scoreEntryPrefab, scoresContainer);
-                var texts = entry.GetComponentsInChildren<TMP_Text>();
-                texts[0].text = $"{i + 1}. {scores[i].playerName}";
-                texts[1].text = scores[i].score.ToString();
-            }
-        });
+        // Mostrar puntuación actual del jugador
+        CreateScoreEntry(1, GameManager.Instance.PlayerName, GameManager.Instance.CurredScore);
+
+        // Mostrar récord personal
+        CreateScoreEntry(2, GameManager.Instance.PlayerName + " (Récord)", GameManager.Instance.HighScore);
     }
 
-    private void OnBackButtonClicked()
+    private void CreateScoreEntry(int position, string playerName, int score)
     {
-        GameManager.Instance.ReturnToMenu();
+        if (scoreEntryPrefab == null || scoresContainer == null) return;
+
+        var entry = Instantiate(scoreEntryPrefab, scoresContainer);
+        var texts = entry.GetComponentsInChildren<TMP_Text>();
+
+        if (texts.Length >= 2)
+        {
+            texts[0].text = $"{position}. {playerName}";
+            texts[1].text = score.ToString();
+        }
     }
 }

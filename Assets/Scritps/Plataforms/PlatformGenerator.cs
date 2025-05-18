@@ -66,7 +66,7 @@ public class PlatformGenerator : MonoBehaviour
 
         platform.tag = "Plataform";
   
-        platform.layer = LayerMask.NameToLayer("Ground");
+        platform.layer = LayerMask.NameToLayer("Plataform");
 
         if (Random.value < movingPlatformChance)
         {
